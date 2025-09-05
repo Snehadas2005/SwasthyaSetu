@@ -16,7 +16,6 @@ import PatientDashboard from "./components/PatientDashboard";
 import DoctorDashboard from "./components/DoctorDashboard";
 import AuthorityDashboard from "./components/AuthorityDashboard";
 import PharmacyView from "./components/PharmacyView";
-import Chatbot from "./components/Chatbot";
 
 function App() {
   return (
