@@ -1,18 +1,15 @@
 import React, { useState, useCallback } from "react";
 import {
   Upload,
-  FileText,
   User,
   Pill,
   ShoppingCart,
   CheckCircle,
   AlertCircle,
-  Clock,
   Star,
   Activity,
   MapPin,
   Phone,
-  Calendar,
   Stethoscope,
   Heart,
   XCircle,
