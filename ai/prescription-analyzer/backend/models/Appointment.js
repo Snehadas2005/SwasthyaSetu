@@ -369,4 +369,197 @@ appointmentSchema.methods.calculateWaitTime = function() {
 
 // Method to update appointment status
 appointmentSchema.methods.updateStatus = function(newStatus, reason = '') {
-  const ol
+  const oldStatus = this.status;
+  this.status = newStatus;
+  this.updatedAt = new Date();
+  
+  // Handle status-specific logic
+  switch (newStatus) {
+    case 'cancelled':
+      this.scheduling.cancellationReason = reason;
+      this.scheduling.cancellationTime = new Date();
+      break;
+    case 'in_progress':
+      this.session.startTime = new Date();
+      break;
+    case 'completed':
+      this.session.endTime = new Date();
+      if (this.session.startTime) {
+        this.session.actualDuration = Math.floor((this.session.endTime - this.session.startTime) / (1000 * 60));
+      }
+      break;
+  }
+  
+  return this.save();
+};
+
+// Method to reschedule appointment
+appointmentSchema.methods.reschedule = function(newDate, newTime) {
+  this.appointmentDate = newDate;
+  this.appointmentTime.start = newTime.start;
+  this.appointmentTime.end = newTime.end;
+  this.status = 'rescheduled';
+  this.updatedAt = new Date();
+  return this.save();
+};
+
+// Static method to find appointments by doctor and date range
+appointmentSchema.statics.findByDoctorAndDateRange = function(doctorId, startDate, endDate) {
+  return this.find({
+    doctorId: doctorId,
+    appointmentDate: {
+      $gte: startDate,
+      $lte: endDate
+    },
+    status: { $nin: ['cancelled', 'no_show'] }
+  }).sort({ appointmentDate: 1, 'appointmentTime.start': 1 });
+};
+
+// Static method to find urgent appointments
+appointmentSchema.statics.findUrgentAppointments = function(district = null) {
+  const query = {
+    status: { $in: ['scheduled', 'confirmed'] },
+    $or: [
+      { 'consultationReason.urgencyLevel': 'Emergency' },
+      { 'consultationReason.urgencyLevel': 'High' },
+      { isEmergency: true }
+    ]
+  };
+  
+  if (district) {
+    query['patientInfo.location.district'] = district;
+  }
+  
+  return this.find(query)
+    .populate('patientId', 'name phone address')
+    .populate('doctorId', 'name specialization phone')
+    .sort({ 'consultationReason.urgencyLevel': -1, appointmentDate: 1 });
+};
+
+// Static method for appointment analytics
+appointmentSchema.statics.getAppointmentAnalytics = function(filters = {}) {
+  const matchStage = {
+    createdAt: {
+      $gte: filters.startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      $lte: filters.endDate || new Date()
+    }
+  };
+  
+  if (filters.district) {
+    matchStage['patientInfo.location.district'] = filters.district;
+  }
+  
+  if (filters.specialty) {
+    matchStage.specialty = filters.specialty;
+  }
+  
+  return this.aggregate([
+    { $match: matchStage },
+    {
+      $group: {
+        _id: null,
+        totalAppointments: { $sum: 1 },
+        completedAppointments: {
+          $sum: { $cond: [{ $eq: ['$status', 'completed'] }, 1, 0] }
+        },
+        cancelledAppointments: {
+          $sum: { $cond: [{ $eq: ['$status', 'cancelled'] }, 1, 0] }
+        },
+        emergencyAppointments: {
+          $sum: { $cond: [{ $eq: ['$consultationReason.urgencyLevel', 'Emergency'] }, 1, 0] }
+        },
+        averageWaitTime: { $avg: '$analytics.waitTime' },
+        averageSessionDuration: { $avg: '$session.actualDuration' },
+        consultationModes: { $push: '$consultationMode' },
+        specialties: { $push: '$specialty' },
+        patientSatisfactionAvg: { $avg: '$feedback.patientRating' }
+      }
+    }
+  ]);
+};
+
+// Static method to get doctor workload
+appointmentSchema.statics.getDoctorWorkload = function(doctorId, dateRange = 7) {
+  const startDate = new Date();
+  const endDate = new Date(Date.now() + dateRange * 24 * 60 * 60 * 1000);
+  
+  return this.aggregate([
+    {
+      $match: {
+        doctorId: mongoose.Types.ObjectId(doctorId),
+        appointmentDate: { $gte: startDate, $lte: endDate },
+        status: { $in: ['scheduled', 'confirmed', 'in_progress'] }
+      }
+    },
+    {
+      $group: {
+        _id: {
+          date: { $dateToString: { format: '%Y-%m-%d', date: '$appointmentDate' } }
+        },
+        appointmentCount: { $sum: 1 },
+        totalDuration: { $sum: '$appointmentTime.duration' },
+        urgentCount: {
+          $sum: { $cond: [{ $in: ['$consultationReason.urgencyLevel', ['High', 'Emergency']] }, 1, 0] }
+        }
+      }
+    },
+    { $sort: { '_id.date': 1 } }
+  ]);
+};
+
+// Static method for patient flow analysis
+appointmentSchema.statics.getPatientFlowAnalysis = function(district, days = 30) {
+  const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  
+  return this.aggregate([
+    {
+      $match: {
+        'patientInfo.location.district': district,
+        createdAt: { $gte: startDate }
+      }
+    },
+    {
+      $group: {
+        _id: {
+          date: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          urgency: '$consultationReason.urgencyLevel'
+        },
+        count: { $sum: 1 }
+      }
+    },
+    {
+      $group: {
+        _id: '$_id.date',
+        urgencyBreakdown: {
+          $push: {
+            level: '$_id.urgency',
+            count: '$count'
+          }
+        },
+        totalPatients: { $sum: '$count' }
+      }
+    },
+    { $sort: { '_id': 1 } }
+  ]);
+};
+
+// Method to generate appointment summary
+appointmentSchema.methods.generateSummary = function() {
+  return {
+    appointmentId: this.appointmentId,
+    patient: this.patientInfo.name,
+    doctor: this.doctorId, // Will be populated
+    date: this.appointmentDate,
+    time: `${this.appointmentTime.start} - ${this.appointmentTime.end}`,
+    status: this.status,
+    specialty: this.specialty,
+    consultationMode: this.consultationMode,
+    urgency: this.consultationReason.urgencyLevel,
+    chiefComplaint: this.consultationReason.chiefComplaint,
+    diagnosis: this.consultation.diagnosis?.primary,
+    followUpRequired: this.consultation.followUp?.required,
+    patientRating: this.feedback.patientRating
+  };
+};
+
+module.exports = mongoose.model('Appointment', appointmentSchema);
