@@ -1,358 +1,421 @@
 import React, { useState } from 'react';
-import { Heart, AlertTriangle, CheckCircle, HelpCircle, Calendar, User, Activity } from 'lucide-react';
+import './App.css';
 
-const SymptomTracker = () => {
+// Enhanced Header Component
+const Header = () => (
+  <header className="app-header">
+    <div className="header-content">
+      <div className="logo-section">
+        <div className="logo">🩺</div>
+        <h1>MediCheck AI</h1>
+        <p className="tagline">Intelligent Symptom Analysis</p>
+      </div>
+    </div>
+  </header>
+);
+
+// Enhanced Loading Spinner Component
+const LoadingSpinner = () => (
+  <div className="loading-container">
+    <div className="loading-spinner">
+      <div className="spinner-ring"></div>
+      <div className="spinner-ring"></div>
+      <div className="spinner-ring"></div>
+    </div>
+    <p className="loading-text">Analyzing your symptoms...</p>
+  </div>
+);
+
+// Enhanced Symptom Form Component
+const SymptomForm = ({ onSubmit, loading }) => {
   const [formData, setFormData] = useState({
     symptoms: '',
-    duration: '',
     age: '',
     gender: '',
-    medicalHistory: '',
-    severity: '5'
+    duration: '',
+    medicalHistory: ''
   });
-  const [analysis, setAnalysis] = useState(null);
-  const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  const [errors, setErrors] = useState({});
+
+  const validateField = (field, value) => {
+    let isValid = true;
+    let errorMessage = '';
+
+    switch (field) {
+      case 'symptoms':
+        if (!value.trim()) {
+          errorMessage = 'Please describe your symptoms';
+          isValid = false;
+        }
+        break;
+      case 'age':
+        const age = parseInt(value);
+        if (!age || age < 1 || age > 120) {
+          errorMessage = 'Please enter a valid age (1-120)';
+          isValid = false;
+        }
+        break;
+      case 'gender':
+        if (!value) {
+          errorMessage = 'Please select your gender';
+          isValid = false;
+        }
+        break;
+      default:
+        break;
+    }
+
+    return { isValid, errorMessage };
   };
 
-  const analyzeSymptoms = async () => {
-    setLoading(true);
+  const validateForm = () => {
+    const newErrors = {};
+    let isFormValid = true;
+
+    // Validate required fields
+    const requiredFields = ['symptoms', 'age', 'gender'];
     
-    // Simulate API call to Python backend
-    setTimeout(() => {
-      // Mock AI analysis based on symptoms
-      const mockAnalysis = generateMockAnalysis(formData.symptoms);
-      setAnalysis(mockAnalysis);
-      setLoading(false);
-    }, 2000);
+    requiredFields.forEach(field => {
+      const { isValid, errorMessage } = validateField(field, formData[field]);
+      if (!isValid) {
+        newErrors[field] = errorMessage;
+        isFormValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+    return isFormValid;
   };
 
-  const generateMockAnalysis = (symptoms) => {
-    const lowerSymptoms = symptoms.toLowerCase();
-    
-    if (lowerSymptoms.includes('fever') && lowerSymptoms.includes('cough')) {
-      return {
-        possibleCauses: ['Common Cold', 'Influenza', 'COVID-19', 'Upper Respiratory Infection'],
-        urgencyLevel: 'Medium',
-        urgencyColor: 'text-yellow-600',
-        urgencyBg: 'bg-yellow-50',
-        recommendations: [
-          'Stay hydrated with plenty of fluids',
-          'Get adequate rest and sleep',
-          'Monitor temperature regularly',
-          'Consider OTC fever reducer if needed',
-          'Isolate to prevent spread if infectious'
-        ],
-        clarifyingQuestions: [
-          'Any difficulty breathing or shortness of breath?',
-          'Any chest pain or tightness?',
-          'Recent travel or exposure to sick individuals?',
-          'Any loss of taste or smell?'
-        ]
-      };
-    } else if (lowerSymptoms.includes('headache') && lowerSymptoms.includes('nausea')) {
-      return {
-        possibleCauses: ['Migraine', 'Tension Headache', 'Dehydration', 'Food Poisoning'],
-        urgencyLevel: 'Low',
-        urgencyColor: 'text-green-600',
-        urgencyBg: 'bg-green-50',
-        recommendations: [
-          'Rest in a dark, quiet room',
-          'Stay hydrated',
-          'Apply cold or warm compress to head',
-          'Consider OTC pain reliever',
-          'Avoid triggers like bright lights'
-        ],
-        clarifyingQuestions: [
-          'Is this a new type of headache for you?',
-          'Any visual changes or sensitivity to light?',
-          'Any recent dietary changes?',
-          'Stress levels recently?'
-        ]
-      };
-    } else if (lowerSymptoms.includes('chest pain')) {
-      return {
-        possibleCauses: ['Muscle Strain', 'Acid Reflux', 'Anxiety', 'Cardiac Issues'],
-        urgencyLevel: 'High',
-        urgencyColor: 'text-red-600',
-        urgencyBg: 'bg-red-50',
-        recommendations: [
-          'SEEK IMMEDIATE MEDICAL ATTENTION',
-          'Do not drive yourself to hospital',
-          'Call emergency services if severe',
-          'Sit upright and stay calm',
-          'Have someone stay with you'
-        ],
-        clarifyingQuestions: [
-          'Is the pain radiating to arm, jaw, or back?',
-          'Any shortness of breath?',
-          'Any sweating or nausea with the pain?',
-          'Does the pain worsen with movement?'
-        ]
-      };
-    } else {
-      return {
-        possibleCauses: ['Minor Viral Infection', 'Stress-Related Symptoms', 'Lifestyle Factors'],
-        urgencyLevel: 'Low',
-        urgencyColor: 'text-green-600',
-        urgencyBg: 'bg-green-50',
-        recommendations: [
-          'Monitor symptoms for changes',
-          'Get adequate rest',
-          'Stay hydrated',
-          'Maintain healthy diet',
-          'Consider stress management techniques'
-        ],
-        clarifyingQuestions: [
-          'How long have you been experiencing these symptoms?',
-          'Any recent changes in lifestyle or stress?',
-          'Are symptoms getting better or worse?'
-        ]
-      };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      onSubmit(formData);
     }
   };
 
-  const getUrgencyIcon = (level) => {
-    switch(level) {
-      case 'High': return <AlertTriangle className="w-5 h-5 text-red-600" />;
-      case 'Medium': return <AlertTriangle className="w-5 h-5 text-yellow-600" />;
-      case 'Low': return <CheckCircle className="w-5 h-5 text-green-600" />;
-      default: return <AlertTriangle className="w-5 h-5" />;
+  const handleChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }));
+    }
+  };
+
+  const handleBlur = (field, value) => {
+    const { isValid, errorMessage } = validateField(field, value);
+    if (!isValid) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: errorMessage
+      }));
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <Heart className="w-10 h-10 text-red-500 mr-3" />
-            <h1 className="text-4xl font-bold text-gray-800">Medical Symptom Tracker</h1>
+    <div className="symptom-form-container">
+      <div className="form-header">
+        <h2>Tell us about your symptoms</h2>
+        <p className="form-subtitle">Please provide as much detail as possible for accurate analysis</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="symptom-form">
+        <div className="form-section">
+          <div className="form-group">
+            <label htmlFor="symptoms" className="form-label">
+              <span className="label-icon">📝</span>
+              Symptoms *
+            </label>
+            <textarea
+              id="symptoms"
+              value={formData.symptoms}
+              onChange={(e) => handleChange('symptoms', e.target.value)}
+              onBlur={(e) => handleBlur('symptoms', e.target.value)}
+              placeholder="Describe your symptoms in detail (e.g., 'fever for 3 days, headache, sore throat')"
+              className={`form-textarea ${errors.symptoms ? 'error' : ''}`}
+              rows="4"
+              disabled={loading}
+            />
+            {errors.symptoms && <span className="error-text">{errors.symptoms}</span>}
           </div>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            AI-powered symptom analysis to help you understand possible conditions. 
-            <span className="font-semibold text-red-600"> Always consult a healthcare professional for medical advice.</span>
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Input Form */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
-              <Activity className="w-6 h-6 mr-2 text-blue-600" />
-              Symptom Information
-            </h2>
+        <div className="form-section">
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="age" className="form-label">
+                <span className="label-icon">🎂</span>
+                Age *
+              </label>
+              <input
+                type="number"
+                id="age"
+                value={formData.age}
+                onChange={(e) => handleChange('age', e.target.value)}
+                onBlur={(e) => handleBlur('age', e.target.value)}
+                placeholder="Enter your age"
+                className={`form-input ${errors.age ? 'error' : ''}`}
+                min="1"
+                max="120"
+                disabled={loading}
+              />
+              {errors.age && <span className="error-text">{errors.age}</span>}
+            </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Describe Your Symptoms *
-                </label>
-                <textarea
-                  name="symptoms"
-                  value={formData.symptoms}
-                  onChange={handleInputChange}
-                  placeholder="e.g., fever, headache, cough, fatigue..."
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  rows="4"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    Duration
-                  </label>
-                  <input
-                    type="text"
-                    name="duration"
-                    value={formData.duration}
-                    onChange={handleInputChange}
-                    placeholder="e.g., 3 days"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                    <User className="w-4 h-4 mr-1" />
-                    Age
-                  </label>
-                  <input
-                    type="number"
-                    name="age"
-                    value={formData.age}
-                    onChange={handleInputChange}
-                    placeholder="Age"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Gender
-                </label>
-                <select
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Select gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Severity (1-10)
-                </label>
-                <input
-                  type="range"
-                  name="severity"
-                  min="1"
-                  max="10"
-                  value={formData.severity}
-                  onChange={handleInputChange}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-sm text-gray-500 mt-1">
-                  <span>Mild (1)</span>
-                  <span className="font-medium">Current: {formData.severity}</span>
-                  <span>Severe (10)</span>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Medical History (Optional)
-                </label>
-                <textarea
-                  name="medicalHistory"
-                  value={formData.medicalHistory}
-                  onChange={handleInputChange}
-                  placeholder="Any relevant medical conditions, medications, allergies..."
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  rows="3"
-                />
-              </div>
-
-              <button
-                onClick={analyzeSymptoms}
-                disabled={!formData.symptoms || loading}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+            <div className="form-group">
+              <label htmlFor="gender" className="form-label">
+                <span className="label-icon">👤</span>
+                Gender *
+              </label>
+              <select
+                id="gender"
+                value={formData.gender}
+                onChange={(e) => handleChange('gender', e.target.value)}
+                onBlur={(e) => handleBlur('gender', e.target.value)}
+                className={`form-select ${errors.gender ? 'error' : ''}`}
+                disabled={loading}
               >
-                {loading ? 'Analyzing...' : 'Analyze Symptoms'}
-              </button>
+                <option value="">Select gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+              {errors.gender && <span className="error-text">{errors.gender}</span>}
             </div>
           </div>
+        </div>
 
-          {/* Analysis Results */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-              Analysis Results
-            </h2>
+        <div className="form-section">
+          <div className="form-group">
+            <label htmlFor="duration" className="form-label">
+              <span className="label-icon">⏰</span>
+              Duration
+            </label>
+            <input
+              type="text"
+              id="duration"
+              value={formData.duration}
+              onChange={(e) => handleChange('duration', e.target.value)}
+              placeholder="How long have you had these symptoms? (e.g., '3 days', '1 week')"
+              className="form-input"
+              disabled={loading}
+            />
+          </div>
+        </div>
 
-            {!analysis && !loading && (
-              <div className="text-center text-gray-500 py-12">
-                <Activity className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                <p>Enter your symptoms and click "Analyze" to get started</p>
-              </div>
+        <div className="form-section">
+          <div className="form-group">
+            <label htmlFor="medicalHistory" className="form-label">
+              <span className="label-icon">🏥</span>
+              Medical History <span className="optional">(Optional)</span>
+            </label>
+            <textarea
+              id="medicalHistory"
+              value={formData.medicalHistory}
+              onChange={(e) => handleChange('medicalHistory', e.target.value)}
+              placeholder="Any relevant medical conditions, medications, allergies, or recent changes..."
+              className="form-textarea"
+              rows="3"
+              disabled={loading}
+            />
+          </div>
+        </div>
+
+        <div className="form-actions">
+          <button 
+            type="submit" 
+            className="btn-analyze"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <div className="btn-spinner"></div>
+                Analyzing...
+              </>
+            ) : (
+              <>
+                <span className="btn-icon">🔍</span>
+                Analyze Symptoms
+              </>
             )}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
 
-            {loading && (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                <p className="text-gray-600">Analyzing your symptoms...</p>
+// Enhanced Results Display Component
+const ResultsDisplay = ({ analysis, onNewAnalysis }) => {
+  if (!analysis) return null;
+
+  if (analysis.error) {
+    return (
+      <div className="error-container">
+        <div className="error-icon">❌</div>
+        <div className="error-content">
+          <h3>Analysis Error</h3>
+          <p>{analysis.error}</p>
+          <button onClick={onNewAnalysis} className="btn-secondary">
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const getUrgencyIcon = (level) => {
+    switch (level) {
+      case 'EMERGENCY': return '🚨';
+      case 'HIGH': return '⚠️';
+      case 'MEDIUM': return '⚡';
+      case 'LOW': return '✅';
+      default: return '📋';
+    }
+  };
+
+  const getUrgencyColor = (level) => {
+    switch (level) {
+      case 'EMERGENCY': return '#dc2626';
+      case 'HIGH': return '#ea580c';
+      case 'MEDIUM': return '#d97706';
+      case 'LOW': return '#059669';
+      default: return '#6b7280';
+    }
+  };
+
+  return (
+    <div className="results-container">
+      <div className="results-header">
+        <h2>Analysis Results</h2>
+        <button onClick={onNewAnalysis} className="btn-new-analysis">
+          New Analysis
+        </button>
+      </div>
+
+      {/* Enhanced Urgency Level */}
+      <div 
+        className="urgency-card" 
+        style={{ borderColor: getUrgencyColor(analysis.urgency_level) }}
+      >
+        <div className="urgency-header">
+          <span className="urgency-icon">
+            {getUrgencyIcon(analysis.urgency_level)}
+          </span>
+          <div className="urgency-content">
+            <h3 style={{ color: getUrgencyColor(analysis.urgency_level) }}>
+              {analysis.urgency_level} Priority
+            </h3>
+            <p className="urgency-action">{analysis.urgency_action}</p>
+            <p className="urgency-description">{analysis.urgency_description}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Possible Causes */}
+      <div className="result-section">
+        <h3 className="section-title">
+          <span className="section-icon">🔍</span>
+          Possible Causes
+        </h3>
+        <div className="causes-grid">
+          {analysis.possible_causes.map((cause, index) => (
+            <div key={index} className="cause-card">
+              <span className="cause-number">{index + 1}</span>
+              <span className="cause-name">{cause}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Enhanced ML Analysis Results */}
+      {analysis.ml_analysis && (
+        <div className="result-section">
+          <h3 className="section-title">
+            <span className="section-icon">🤖</span>
+            AI Analysis
+          </h3>
+          <div className="ml-analysis-card">
+            <div className="confidence-meter">
+              <span className="confidence-label">Confidence Level</span>
+              <div className="confidence-bar">
+                <div 
+                  className="confidence-fill"
+                  style={{ width: `${analysis.ml_analysis.confidence_percentage}%` }}
+                ></div>
               </div>
-            )}
-
-            {analysis && (
-              <div className="space-y-6">
-                {/* Possible Causes */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                    <CheckCircle className="w-5 h-5 mr-2 text-green-600" />
-                    Possible Causes
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {analysis.possibleCauses.map((cause, index) => (
-                      <span key={index} className="bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-sm">
-                        {cause}
-                      </span>
-                    ))}
+              <span className="confidence-value">
+                {analysis.ml_analysis.confidence_percentage}%
+              </span>
+            </div>
+            
+            {analysis.ml_analysis.top_predictions && (
+              <div className="predictions-list">
+                <h4>Top Predictions:</h4>
+                {analysis.ml_analysis.top_predictions.slice(0, 3).map((pred, index) => (
+                  <div key={index} className="prediction-item">
+                    <span className="prediction-name">{pred.disease}</span>
+                    <span className="prediction-percentage">{pred.percentage}%</span>
                   </div>
-                </div>
-
-                {/* Urgency Level */}
-                <div className={`p-4 rounded-lg ${analysis.urgencyBg}`}>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">
-                    {getUrgencyIcon(analysis.urgencyLevel)}
-                    <span className="ml-2">Urgency Level: </span>
-                    <span className={`ml-1 ${analysis.urgencyColor}`}>{analysis.urgencyLevel}</span>
-                  </h3>
-                </div>
-
-                {/* Recommendations */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                    <Heart className="w-5 h-5 mr-2 text-red-500" />
-                    Recommendations
-                  </h3>
-                  <ul className="space-y-2">
-                    {analysis.recommendations.map((rec, index) => (
-                      <li key={index} className="flex items-start">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                        <span className="text-gray-700">{rec}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Clarifying Questions */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                    <HelpCircle className="w-5 h-5 mr-2 text-purple-600" />
-                    Clarifying Questions
-                  </h3>
-                  <ul className="space-y-2">
-                    {analysis.clarifyingQuestions.map((question, index) => (
-                      <li key={index} className="flex items-start">
-                        <span className="text-purple-600 mr-2">?</span>
-                        <span className="text-gray-700">{question}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                ))}
               </div>
             )}
           </div>
         </div>
+      )}
 
-        {/* Disclaimer */}
-        <div className="mt-8 bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-start">
-            <AlertTriangle className="w-6 h-6 text-red-600 mr-3 flex-shrink-0 mt-1" />
-            <div>
-              <h4 className="font-semibold text-red-800 mb-1">Medical Disclaimer</h4>
-              <p className="text-red-700 text-sm">
-                This AI tool is for informational purposes only and does not provide medical diagnosis. 
-                Always consult with a qualified healthcare professional for proper medical advice, 
-                diagnosis, and treatment. In case of emergency, call your local emergency number immediately.
-              </p>
+      {/* Enhanced Recommendations */}
+      <div className="result-section">
+        <h3 className="section-title">
+          <span className="section-icon">💡</span>
+          Recommendations
+        </h3>
+        <div className="recommendations-list">
+          {analysis.recommendations.map((rec, index) => (
+            <div key={index} className="recommendation-item">
+              <span className="rec-bullet">•</span>
+              <span className="rec-text">{rec}</span>
             </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Enhanced Clarifying Questions */}
+      {analysis.clarifying_questions && analysis.clarifying_questions.length > 0 && (
+        <div className="result-section">
+          <h3 className="section-title">
+            <span className="section-icon">❓</span>
+            Questions for Your Doctor
+          </h3>
+          <div className="questions-list">
+            {analysis.clarifying_questions.map((question, index) => (
+              <div key={index} className="question-item">
+                <span className="question-number">Q{index + 1}</span>
+                <span className="question-text">{question}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Enhanced Medical Disclaimer */}
+      <div className="disclaimer-card">
+        <div className="disclaimer-icon">⚠️</div>
+        <div className="disclaimer-content">
+          <h4>Important Medical Disclaimer</h4>
+          <p>{analysis.disclaimer || "This AI analysis is for informational purposes only and should not replace professional medical advice, diagnosis, or treatment. Always consult with qualified healthcare professionals for medical concerns."}</p>
+          <div className="disclaimer-points">
+            <p>• This tool is for informational purposes only</p>
+            <p>• Always consult healthcare professionals for medical advice</p>
+            <p>• Call emergency services for serious symptoms</p>
           </div>
         </div>
       </div>
@@ -360,4 +423,113 @@ const SymptomTracker = () => {
   );
 };
 
-export default SymptomTracker;
+// Enhanced Main App Component
+function App() {
+  const [analysis, setAnalysis] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSymptomAnalysis = async (formData) => {
+    setLoading(true);
+    setError('');
+    setAnalysis(null);
+
+    try {
+      const response = await fetch('http://localhost:5000/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          symptoms: formData.symptoms,
+          age: formData.age,
+          gender: formData.gender,
+          duration: formData.duration,
+          medical_history: formData.medicalHistory
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to analyze symptoms. Please try again.');
+      }
+
+      const result = await response.json();
+      setAnalysis(result);
+      
+      // Smooth scroll to results with enhanced timing
+      setTimeout(() => {
+        const resultsElement = document.querySelector('.results-container');
+        if (resultsElement) {
+          resultsElement.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }, 200);
+      
+    } catch (err) {
+      setError(err.message || 'An error occurred while analyzing symptoms.');
+      console.error('Analysis error:', err);
+      
+      // Scroll to error message
+      setTimeout(() => {
+        const errorElement = document.querySelector('.error-message');
+        if (errorElement) {
+          errorElement.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'center'
+          });
+        }
+      }, 100);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleNewAnalysis = () => {
+    setAnalysis(null);
+    setError('');
+    
+    // Smooth scroll to top
+    window.scrollTo({ 
+      top: 0, 
+      behavior: 'smooth' 
+    });
+  };
+
+  return (
+    <div className="App">
+      <Header />
+      <main className="main-content">
+        <div className="container">
+          {/* Show form when not loading and no results */}
+          {!analysis && !loading && (
+            <SymptomForm onSubmit={handleSymptomAnalysis} loading={loading} />
+          )}
+          
+          {/* Show loading state */}
+          {loading && <LoadingSpinner />}
+          
+          {/* Show error message */}
+          {error && (
+            <div className="error-message">
+              <div className="error-icon">❌</div>
+              <div className="error-content">
+                <h3>Analysis Error</h3>
+                <p>{error}</p>
+                <button onClick={handleNewAnalysis} className="btn-secondary">
+                  Try Again
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {/* Show results */}
+          {analysis && <ResultsDisplay analysis={analysis} onNewAnalysis={handleNewAnalysis} />}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default App;

@@ -29,7 +29,7 @@ backend/venv312/
 *.pyc
 __pycache__/
 
-ai/prescription-analyzer/backend/venv312/
-ai/prescription-analyzer/backend/venv312/
-ai/prescription-analyzer/backend/venv312/
-ai/prescription-analyzer/backend/venv312/
+
+.venv/
+venv/
+venv312/
