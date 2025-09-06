@@ -1,0 +1,78 @@
+.home-container {
+  min-height: 100vh;
+  background-color: #f9fafb; /* gray-50 */
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937; /* gray-800 */
+  margin-bottom: 2rem;
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1200px;
+}
+
+@media (min-width: 768px) {
+  .home-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.home-card {
+  padding: 2rem;
+  border-radius: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.home-card h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.home-card p {
+  font-size: 1rem;
+  color: #374151; /* gray-700 */
+  line-height: 1.4;
+}
+
+/* Hover effects: scale & shadow */
+.home-card:hover {
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Colors for cards */
+.login-card { background-color: #dbeafe; } /* blue-100 */
+.login-card:hover { background-color: #bfdbfe; }
+
+.register-card { background-color: #fef9c3; } /* yellow-100 */
+.register-card:hover { background-color: #fef08a; }
+
+.symptom-card { background-color: #bbf7d0; } /* green-100 */
+.symptom-card:hover { background-color: #86efac; }
+
+.chatbot-card { background-color: #e9d5ff; } /* purple-100 */
+.chatbot-card:hover { background-color: #d8b4fe; }
+
+.content-card { background-color: #fecaca; } /* red-100 */
+.content-card:hover { background-color: #fca5a5; }
+
+.about-card { background-color: #e0e7ff; } /* indigo-100 */
+.about-card:hover { background-color: #c7d2fe; }

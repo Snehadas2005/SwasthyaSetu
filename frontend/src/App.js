@@ -1,12 +1,39 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { HeartPulse } from "lucide-react";
+
+// Global App CSS
 import "./App.css";
 
+// Pages CSS
+import "./pages/Home.css";
+import "./pages/ContentPage.css";
+import "./pages/Landing.css";
+import "./pages/LoginPage.css";
+import "./pages/RegisterPage.css";
+import "./pages/LoginPatient.css";
+import "./pages/LoginDoctor.css";
+import "./pages/LoginAuthority.css";
+import "./pages/RegisterPatient.css";
+import "./pages/RegisterDoctor.css";
+import "./pages/RegisterAuthority.css";
+
+// Components CSS
+import "./components/PatientDashboard.css";
+import "./components/DoctorDashboard.css";
+import "./components/AuthorityDashboard.css";
+import "./components/PharmacyView.css";
+import "./components/Chatbot.css";
+import "./components/SymptomTracker.css";
+
 // Pages
+import Landing from "./pages/Landing";
 import Home from "./pages/Home";
+import ContentPage from "./pages/ContentPage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import LoginPatient from "./pages/LoginPatient";
 import LoginDoctor from "./pages/LoginDoctor";
 import LoginAuthority from "./pages/LoginAuthority";
-
 import RegisterPatient from "./pages/RegisterPatient";
 import RegisterDoctor from "./pages/RegisterDoctor";
 import RegisterAuthority from "./pages/RegisterAuthority";
@@ -16,63 +43,55 @@ import PatientDashboard from "./components/PatientDashboard";
 import DoctorDashboard from "./components/DoctorDashboard";
 import AuthorityDashboard from "./components/AuthorityDashboard";
 import PharmacyView from "./components/PharmacyView";
+import Chatbot from "./components/Chatbot";
+import SymptomTracker from "./components/SymptomTracker";
 
 function App() {
   return (
     <Router>
       <div className="App">
-        {/* Header */}
+        {/* Navbar */}
         <header className="App-header">
-          <h1>TeleHealth Rural</h1>
-          <nav style={{ marginTop: "10px" }}>
-            <Link
-              to="/"
-              style={{ margin: "0 10px", color: "#2e7d32", textDecoration: "none" }}
-            >
-              Home
-            </Link>
-            <Link
-              to="/login/patient"
-              style={{ margin: "0 10px", color: "#2e7d32", textDecoration: "none" }}
-            >
-              Patient Login
-            </Link>
-            <Link
-              to="/login/doctor"
-              style={{ margin: "0 10px", color: "#2e7d32", textDecoration: "none" }}
-            >
-              Doctor Login
-            </Link>
-            <Link
-              to="/login/authority"
-              style={{ margin: "0 10px", color: "#2e7d32", textDecoration: "none" }}
-            >
-              Authority Login
-            </Link>
+          <div className="logo">
+            <HeartPulse color="white" size={30} />
+            <span className="app-name">MediHealth</span>
+          </div>
+          <nav className="nav-links">
+            {[
+              { path: "/home", label: "Home" },
+              { path: "/login", label: "Login" },
+              { path: "/register", label: "Register" },
+              { path: "/symptom-tracker", label: "Symptom Tracker" },
+              { path: "/chatbot", label: "Chatbot" },
+              { path: "/content", label: "Content" },
+            ].map((link, index) => (
+              <Link key={index} to={link.path} className="nav-link">
+                {link.label}
+              </Link>
+            ))}
           </nav>
         </header>
 
         {/* Routes */}
-        <main style={{ padding: "20px" }}>
+        <main className="App-main">
           <Routes>
-            {/* Landing */}
-            <Route path="/" element={<Home />} />
-
-            {/* Logins */}
+            <Route path="/" element={<Landing />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/content" element={<ContentPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route path="/login/patient" element={<LoginPatient />} />
             <Route path="/login/doctor" element={<LoginDoctor />} />
             <Route path="/login/authority" element={<LoginAuthority />} />
-
-            {/* Registrations */}
             <Route path="/register/patient" element={<RegisterPatient />} />
             <Route path="/register/doctor" element={<RegisterDoctor />} />
             <Route path="/register/authority" element={<RegisterAuthority />} />
-
-            {/* Dashboards */}
             <Route path="/patient-dashboard" element={<PatientDashboard />} />
             <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
             <Route path="/authority-dashboard" element={<AuthorityDashboard />} />
             <Route path="/pharmacy-dashboard" element={<PharmacyView />} />
+            <Route path="/symptom-tracker" element={<SymptomTracker />} />
+            <Route path="/chatbot" element={<Chatbot />} />
           </Routes>
         </main>
       </div>

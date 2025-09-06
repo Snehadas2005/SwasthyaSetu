@@ -1,0 +1,87 @@
+/* Full page background */
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+
+  background: url("https://images.unsplash.com/photo-1580281657521-7ac1a6e20c2b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80")
+    no-repeat center center/cover;
+
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card styling */
+.register-card {
+  background: rgba(255, 255, 255, 0.92);
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  width: 420px;
+}
+
+/* Title & Subtitle */
+.register-title {
+  font-size: 26px;
+  font-weight: bold;
+  color: #003366;
+  margin-bottom: 10px;
+}
+
+.register-subtitle {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 25px;
+}
+
+/* Role options */
+.role-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.role-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.role-btn:hover {
+  background: #0056b3;
+  transform: scale(1.02);
+}
+
+/* Role icons */
+.role-icon {
+  color: #fff;
+}
+
+/* Login link */
+.login-text {
+  font-size: 14px;
+  color: #333;
+  margin-top: 15px;
+}
+
+.login-link {
+  color: #007bff;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}

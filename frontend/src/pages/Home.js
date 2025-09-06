@@ -1,15 +1,40 @@
-import { Link } from "react-router-dom";
+import React from "react";
+import "./Home.css";
 
-function Home() {
+const Home = () => {
   return (
-    <div>
-      <h2>Select your role</h2>
-      <Link to="/login/patient"><button>Patient</button></Link>
-      <Link to="/login/doctor"><button>Doctor</button></Link>
-      <Link to="/login/authority"><button>Authority</button></Link>
-      <Link to="/login/pharmacy"><button>Pharmacy</button></Link>
+    <div className="home-container">
+      <h1 className="home-title">Welcome to MediHealth</h1>
+
+      <div className="home-grid">
+        <div className="home-card login-card">
+          <h2>Login</h2>
+          <p>Access your account securely.</p>
+        </div>
+
+        <div className="home-card register-card">
+          <h2>Register</h2>
+          <p>Create a new account in seconds.</p>
+        </div>
+
+        <div className="home-card symptom-card">
+          <h2>Symptom Checker</h2>
+          <p>Check your symptoms easily.</p>
+        </div>
+
+        <div className="home-card chatbot-card">
+          <h2>Chatbot</h2>
+          <p>Get instant medical assistance.</p>
+        </div>
+
+        <div className="home-card content-card">
+          <h2>Content</h2>
+          <p>Read health articles and tips.</p>
+        </div>
+
+      </div>
     </div>
   );
-}
+};
 
 export default Home;

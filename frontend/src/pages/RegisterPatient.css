@@ -1,0 +1,107 @@
+/* Container with background */
+.patient-register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+
+  background: url("https://images.unsplash.com/photo-1580281658629-0ef3f18e12af?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80")
+    no-repeat center center/cover;
+
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  padding: 30px;
+}
+
+/* Registration card */
+.register-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px;
+  border-radius: 15px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+/* Headings */
+.register-card h2 {
+  font-size: 26px;
+  color: #003366;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.register-card h3 {
+  font-size: 20px;
+  color: #007bff;
+  margin: 20px 0 10px;
+  border-bottom: 2px solid #eaeaea;
+  padding-bottom: 5px;
+}
+
+/* Inputs & Textareas */
+.register-card input,
+.register-card select,
+.register-card textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border 0.3s ease;
+}
+
+.register-card input:focus,
+.register-card select:focus,
+.register-card textarea:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Textarea styling */
+.register-card textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+/* Labels for file inputs */
+.register-card label {
+  font-size: 14px;
+  display: block;
+  margin-bottom: 15px;
+  color: #444;
+}
+
+/* Button styling */
+.btn-primary {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #0056b3;
+}
+
+/* Scrollbar for long forms */
+.register-card::-webkit-scrollbar {
+  width: 8px;
+}
+
+.register-card::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 5px;
+}
+
+.register-card::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}

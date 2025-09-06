@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { updateStock } from "../utils/api";
+import "./PharmacyView.css"; // import CSS
 
 function PharmacyView() {
-  // Dummy data
   const [medicines, setMedicines] = useState([
     { id: 1, name: "Paracetamol", stock: 20 },
     { id: 2, name: "Vitamin D", stock: 5 },
@@ -27,34 +27,33 @@ function PharmacyView() {
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+    <div className="pharmacy-view">
       <h1>Welcome, Pharmacy Owner!</h1>
 
       {/* Medicine Stock Table */}
-      <div style={{ margin: "20px 0" }}>
+      <div className="medicine-stock">
         <h3>Medicine Stock</h3>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <table className="medicine-table">
           <thead>
             <tr>
-              <th style={{ borderBottom: "1px solid #ccc", padding: "8px" }}>Medicine</th>
-              <th style={{ borderBottom: "1px solid #ccc", padding: "8px" }}>Stock</th>
-              <th style={{ borderBottom: "1px solid #ccc", padding: "8px" }}>Actions</th>
+              <th>Medicine</th>
+              <th>Stock</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {medicines.map((med) => (
               <tr key={med.id}>
-                <td style={{ padding: "8px" }}>{med.name}</td>
-                <td style={{ padding: "8px" }}>
+                <td>{med.name}</td>
+                <td>
                   <input
                     type="number"
                     value={med.stock}
                     min="0"
-                    style={{ width: "60px" }}
                     onChange={(e) => handleStockChange(med.id, e.target.value)}
                   />
                 </td>
-                <td style={{ padding: "8px" }}>
+                <td>
                   <button onClick={() => saveStock(med.id, med.stock)}>Save</button>
                 </td>
               </tr>
@@ -64,7 +63,7 @@ function PharmacyView() {
       </div>
 
       {/* Low Stock Alert */}
-      <div style={{ margin: "20px 0" }}>
+      <div className="low-stock-list">
         <h3>Low Stock Medicines</h3>
         <ul>
           {medicines.filter((m) => m.stock < 5).map((med) => (
@@ -76,7 +75,7 @@ function PharmacyView() {
       </div>
 
       {/* Medicine Stock Chart */}
-      <div style={{ margin: "20px 0" }}>
+      <div className="chart-container">
         <h3>Medicine Stock Levels</h3>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={medicines}>
@@ -88,8 +87,8 @@ function PharmacyView() {
         </ResponsiveContainer>
       </div>
 
-      {/* Recent Orders / Prescriptions (dummy) */}
-      <div style={{ margin: "20px 0" }}>
+      {/* Recent Orders / Prescriptions */}
+      <div className="recent-orders">
         <h3>Recent Orders / Prescriptions</h3>
         <ul>
           <li>Raj Kumar - Paracetamol x2</li>

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import "./AuthorityDashboard.css"; // Import CSS file
 
 function AuthorityDashboard() {
-  // Dummy Data
   const [doctorAllocation] = useState([
     { doctor: "Dr. Singh", patients: 12 },
     { doctor: "Dr. Sharma", patients: 8 },
@@ -25,11 +25,11 @@ function AuthorityDashboard() {
   ]);
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+    <div className="authority-dashboard">
       <h1>Authority Dashboard</h1>
 
       {/* Doctor Allocation Chart */}
-      <div style={{ margin: "20px 0" }}>
+      <div className="chart-section">
         <h3>Doctor Allocation (Patients per Doctor)</h3>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={doctorAllocation}>
@@ -42,7 +42,7 @@ function AuthorityDashboard() {
       </div>
 
       {/* Patient Load Chart */}
-      <div style={{ margin: "20px 0" }}>
+      <div className="chart-section">
         <h3>Patient Load Over the Week</h3>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={patientLoad}>
@@ -55,20 +55,20 @@ function AuthorityDashboard() {
       </div>
 
       {/* Medicine Stock Overview */}
-      <div style={{ margin: "20px 0" }}>
+      <div className="medicine-stock">
         <h3>Medicine Stock</h3>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <table className="medicine-table">
           <thead>
             <tr>
-              <th style={{ borderBottom: "1px solid #ccc", padding: "8px" }}>Medicine</th>
-              <th style={{ borderBottom: "1px solid #ccc", padding: "8px" }}>Stock</th>
+              <th>Medicine</th>
+              <th>Stock</th>
             </tr>
           </thead>
           <tbody>
             {medicineStock.map((med) => (
               <tr key={med.name}>
-                <td style={{ padding: "8px" }}>{med.name}</td>
-                <td style={{ padding: "8px" }}>{med.stock}</td>
+                <td>{med.name}</td>
+                <td>{med.stock}</td>
               </tr>
             ))}
           </tbody>
@@ -76,20 +76,18 @@ function AuthorityDashboard() {
       </div>
 
       {/* Quick Stats */}
-      <div style={{ display: "flex", justifyContent: "space-around", margin: "20px 0" }}>
-        <div style={{ border: "1px solid #ccc", padding: "15px", borderRadius: "8px", width: "30%", textAlign: "center" }}>
+      <div className="quick-stats">
+        <div className="stat-card">
           <h3>Total Doctors</h3>
-          <p style={{ fontSize: "24px", fontWeight: "bold" }}>{doctorAllocation.length}</p>
+          <p>{doctorAllocation.length}</p>
         </div>
-        <div style={{ border: "1px solid #ccc", padding: "15px", borderRadius: "8px", width: "30%", textAlign: "center" }}>
+        <div className="stat-card">
           <h3>Total Patients Today</h3>
-          <p style={{ fontSize: "24px", fontWeight: "bold" }}>{patientLoad.reduce((sum, d) => sum + d.count, 0)}</p>
+          <p>{patientLoad.reduce((sum, d) => sum + d.count, 0)}</p>
         </div>
-        <div style={{ border: "1px solid #ccc", padding: "15px", borderRadius: "8px", width: "30%", textAlign: "center" }}>
+        <div className="stat-card">
           <h3>Medicines Low in Stock</h3>
-          <p style={{ fontSize: "24px", fontWeight: "bold" }}>
-            {medicineStock.filter(m => m.stock < 10).length}
-          </p>
+          <p>{medicineStock.filter((m) => m.stock < 10).length}</p>
         </div>
       </div>
     </div>
