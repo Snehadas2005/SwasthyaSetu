@@ -6,8 +6,6 @@ import { useTranslation } from "react-i18next";
 import "./App.css";
 
 // Pages CSS
-import "./pages/Home.css";
-import "./pages/ContentPage.css";
 import "./pages/Landing.css";
 import "./pages/LoginPage.css";
 import "./pages/RegisterPage.css";
@@ -18,6 +16,7 @@ import "./pages/RegisterPatient.css";
 import "./pages/RegisterDoctor.css";
 import "./pages/RegisterAuthority.css";
 
+
 // Components CSS
 import "./components/PatientDashboard.css";
 import "./components/DoctorDashboard.css";
@@ -26,11 +25,10 @@ import "./components/PharmacyView.css";
 import "./components/Chatbot.css";
 import "./components/SymptomTracker.css";
 import "./components/LanguageFab.css";
+import "./components/Footer.css";
 
 // Pages
 import Landing from "./pages/Landing";
-import Home from "./pages/Home";
-import ContentPage from "./pages/ContentPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import LoginPatient from "./pages/LoginPatient";
@@ -39,6 +37,7 @@ import LoginAuthority from "./pages/LoginAuthority";
 import RegisterPatient from "./pages/RegisterPatient";
 import RegisterDoctor from "./pages/RegisterDoctor";
 import RegisterAuthority from "./pages/RegisterAuthority";
+import Footer from "./components/Footer";
 
 // Dashboards
 import PatientDashboard from "./components/PatientDashboard";
@@ -63,12 +62,10 @@ function App() {
           </div>
           <nav className="nav-links">
             {[
-              { path: "/home", label: t('nav.home') },
               { path: "/login", label: t('nav.login') },
               { path: "/register", label: t('nav.register') },
               { path: "/symptom-tracker", label: t('nav.symptomTracker') },
               { path: "/chatbot", label: t('nav.chatbot') },
-              { path: "/content", label: t('nav.content') },
             ].map((link, index) => (
               <Link key={index} to={link.path} className="nav-link">
                 {link.label}
@@ -81,8 +78,6 @@ function App() {
         <main className="App-main">
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/content" element={<ContentPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login/patient" element={<LoginPatient />} />
@@ -102,6 +97,8 @@ function App() {
 
         {/* Language Toggler FAB - positioned globally */}
         <LanguageFab />
+
+        <Footer />
       </div>
     </Router>
   );
