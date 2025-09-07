@@ -8,6 +8,15 @@
     "Classification": "Prescription"
   },
   {
+    "Name": "Dolophen",
+    "Category": "Antidiabetic",
+    "Dosage Form": "Cream",
+    "Strength": "86 mg",
+    "Manufacturer": "Novartis AG",
+    "Indication": "Diabetes",
+    "Classification": "Prescription"
+  },
+  {
     "Name": "Doloprofen",
     "Category": "Analgesic",
     "Dosage Form": "Ointment",
