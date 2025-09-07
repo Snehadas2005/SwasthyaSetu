@@ -123,7 +123,7 @@ def start_backend():
         print("   📚 API docs available at http://localhost:8000/docs")
         
         uvicorn.run(
-            "main:app",
+            "backend.main:app",   
             host="0.0.0.0",
             port=8000,
             reload=False,

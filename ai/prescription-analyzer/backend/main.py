@@ -10,9 +10,11 @@ import logging
 from datetime import datetime, timedelta
 import asyncio
 
+
+
 # Import our enhanced prescription analyzer
 try:
-    from prescription_analyzer import EnhancedPrescriptionAnalyzer
+    from backend.prescription_analyzer import EnhancedPrescriptionAnalyzer
 except ImportError as e:
     print(f"Failed to import EnhancedPrescriptionAnalyzer: {e}")
     print("Please ensure prescription_analyzer.py is in the same directory")
