@@ -9,7 +9,7 @@ const Landing = () => {
       <nav className="navbar">
         <div className="nav-container">
           <div className="nav-logo">
-            <img src="/logo192.png" alt="SwasthyaSetu Logo" className="logo-img" />
+            <img src="/logo.png" alt="SwasthyaSetu Logo" className="logo-img" />
             <span className="logo-text">SwasthyaSetu</span>
           </div>
           <div className="nav-links">
@@ -35,7 +35,7 @@ const Landing = () => {
           </div>
         </div>
         <div className="hero-image">
-          <img src="/logo.png" alt="Telemedicine" />
+          <img src="/mainlogo.png" alt="Telemedicine" />
         </div>
       </section>
 
