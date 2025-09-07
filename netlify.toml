@@ -1,8 +1,7 @@
 [build]
-  # Build command for your React app
+  base = "frontend"
+  publish = "frontend/build"
   command = "npm run build"
-  # Directory where build output is located
-  publish = "build"
 
 [[redirects]]
   from = "/*"
