@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { HeartPulse } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 // Global App CSS
 import "./App.css";
@@ -24,6 +25,7 @@ import "./components/AuthorityDashboard.css";
 import "./components/PharmacyView.css";
 import "./components/Chatbot.css";
 import "./components/SymptomTracker.css";
+import "./components/LanguageFab.css";
 
 // Pages
 import Landing from "./pages/Landing";
@@ -45,8 +47,11 @@ import AuthorityDashboard from "./components/AuthorityDashboard";
 import PharmacyView from "./components/PharmacyView";
 import Chatbot from "./components/Chatbot";
 import SymptomTracker from "./components/SymptomTracker";
+import LanguageFab from "./components/LanguageFab";
 
 function App() {
+  const { t } = useTranslation();
+
   return (
     <Router>
       <div className="App">
@@ -58,12 +63,12 @@ function App() {
           </div>
           <nav className="nav-links">
             {[
-              { path: "/home", label: "Home" },
-              { path: "/login", label: "Login" },
-              { path: "/register", label: "Register" },
-              { path: "/symptom-tracker", label: "Symptom Tracker" },
-              { path: "/chatbot", label: "Chatbot" },
-              { path: "/content", label: "Content" },
+              { path: "/home", label: t('nav.home') },
+              { path: "/login", label: t('nav.login') },
+              { path: "/register", label: t('nav.register') },
+              { path: "/symptom-tracker", label: t('nav.symptomTracker') },
+              { path: "/chatbot", label: t('nav.chatbot') },
+              { path: "/content", label: t('nav.content') },
             ].map((link, index) => (
               <Link key={index} to={link.path} className="nav-link">
                 {link.label}
@@ -94,6 +99,9 @@ function App() {
             <Route path="/chatbot" element={<Chatbot />} />
           </Routes>
         </main>
+
+        {/* Language Toggler FAB - positioned globally */}
+        <LanguageFab />
       </div>
     </Router>
   );
