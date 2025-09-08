@@ -2,10 +2,17 @@
   <img src="frontend/public/mainlogo.png" alt="SwasthyaSetu Logo" width="120"/>
 </p>
 
-<h1 align="center">🏥 SwasthyaSetu - Healthcare Platform</h1>
+<h1 align="center">SwasthyaSetu - Healthcare Platform</h1>
 
 <p align="center">
-  <b>Comprehensive healthcare platform powered by AI & modern web technologies</b>
+  <b>Comprehensive healthcare platform powered by AI & modern web technologies</b><br/>
+  🚧 Currently Under Development 🚧
+</p>
+
+<p align="center">
+  <a href="https://swasthyasetusih.netlify.app/" target="_blank">
+    🔗 Live Demo
+  </a>
 </p>
 
 <p align="center">
@@ -54,7 +61,6 @@
 git clone <repo-url>
 cd SwasthyaSetu
 start_system.bat
-````
 
 ### Linux/Mac
 
