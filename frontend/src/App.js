@@ -1,6 +1,6 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { HeartPulse } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 // Global App CSS
 import "./App.css";
@@ -26,6 +26,7 @@ import "./components/Chatbot.css";
 import "./components/SymptomTracker.css";
 import "./components/LanguageFab.css";
 import "./components/Footer.css";
+import "./components/SystemStatus.css";
 
 // Pages
 import Landing from "./pages/Landing";
@@ -47,6 +48,7 @@ import PharmacyView from "./components/PharmacyView";
 import Chatbot from "./components/Chatbot";
 import SymptomTracker from "./components/SymptomTracker";
 import LanguageFab from "./components/LanguageFab";
+import SystemStatus from "./components/SystemStatus";
 
 function App() {
   const { t } = useTranslation();
@@ -97,6 +99,9 @@ function App() {
 
         {/* Language Toggler FAB - positioned globally */}
         <LanguageFab />
+
+        {/* System Status Monitor */}
+        <SystemStatus />
 
         <Footer />
       </div>

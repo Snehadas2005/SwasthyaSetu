@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, } from 'recharts';
-import { User, Calendar, Pill, FileText, Phone, Bell, Heart, Activity, MapPin, Search, Plus } from 'lucide-react';
-import "./PatientDashboard.css";
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie } from 'recharts';
+import { User, Calendar, Pill, FileText, Phone, Bell, Heart, Activity, MapPin, Search, Plus, Stethoscope, Home, MessageCircle } from 'lucide-react';
 
 const PatientDashboard = () => {
   const [patientInfo, setPatientInfo] = useState({
@@ -31,16 +30,10 @@ const PatientDashboard = () => {
   const [symptoms, setSymptoms] = useState('');
   const [aiAnalysis, setAiAnalysis] = useState('');
 
-  // Load patient info from localStorage
+  // Load patient info from memory
   useEffect(() => {
-    const storedInfo = localStorage.getItem('patientProfile');
-    if (storedInfo) {
-      try {
-        const parsed = JSON.parse(storedInfo);
-        setPatientInfo(prev => ({ ...prev, ...parsed }));
-      } catch (error) {
-        console.log('Error parsing stored patient info');
-      }
+    if (window.patientData) {
+      setPatientInfo(prev => ({ ...prev, ...window.patientData }));
     }
   }, []);
 
@@ -81,106 +74,759 @@ const PatientDashboard = () => {
     }
   };
 
+  const styles = {
+    container: {
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #f0f9ff 0%, #ffffff 50%, #f0fdf4 100%)',
+      fontFamily: "'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+      color: '#1f2937'
+    },
+
+    header: {
+      background: 'rgba(255, 255, 255, 0.95)',
+      backdropFilter: 'blur(20px)',
+      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+      borderBottom: '4px solid #10b981',
+      position: 'sticky',
+      top: '0',
+      zIndex: '1000'
+    },
+
+    headerContent: {
+      maxWidth: '1400px',
+      margin: '0 auto',
+      padding: '20px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    },
+
+    logo: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '16px'
+    },
+
+    logoIcon: {
+      width: '56px',
+      height: '56px',
+      borderRadius: '16px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      boxShadow: '0 10px 25px rgba(16, 185, 129, 0.3)',
+      transition: 'transform 0.3s ease'
+    },
+
+    logoText: {
+      fontSize: '32px',
+      fontWeight: '800',
+      background: 'linear-gradient(135deg, #10b981, #3b82f6)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+      letterSpacing: '-0.5px'
+    },
+
+    logoSubtitle: {
+      fontSize: '14px',
+      color: '#6b7280',
+      fontWeight: '600',
+      marginTop: '4px'
+    },
+
+    headerRight: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '24px'
+    },
+
+    userInfo: {
+      textAlign: 'right'
+    },
+
+    userName: {
+      fontSize: '18px',
+      fontWeight: '700',
+      color: '#1f2937',
+      marginBottom: '4px'
+    },
+
+    userEmail: {
+      fontSize: '14px',
+      color: '#6b7280'
+    },
+
+    userAvatar: {
+      width: '48px',
+      height: '48px',
+      background: 'linear-gradient(135deg, #3b82f6, #10b981)',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)'
+    },
+
+    bellIcon: {
+      color: '#6b7280',
+      cursor: 'pointer',
+      transition: 'color 0.3s ease',
+      padding: '8px',
+      borderRadius: '8px'
+    },
+
+    mainContent: {
+      maxWidth: '1400px',
+      margin: '0 auto',
+      padding: '32px 20px'
+    },
+
+    quickStats: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+      gap: '24px',
+      marginBottom: '32px'
+    },
+
+    statCard: {
+      background: 'rgba(255, 255, 255, 0.9)',
+      backdropFilter: 'blur(20px)',
+      borderRadius: '20px',
+      padding: '24px',
+      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.08)',
+      border: '1px solid rgba(255, 255, 255, 0.5)',
+      transition: 'all 0.3s ease',
+      position: 'relative',
+      overflow: 'hidden'
+    },
+
+    statCardInner: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start'
+    },
+
+    statInfo: {
+      flex: '1'
+    },
+
+    statHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      marginBottom: '12px'
+    },
+
+    statTitle: {
+      fontSize: '14px',
+      fontWeight: '600',
+      color: '#6b7280'
+    },
+
+    statValue: {
+      fontSize: '20px',
+      fontWeight: '800',
+      color: '#1f2937',
+      marginBottom: '8px'
+    },
+
+    statButton: {
+      padding: '8px 16px',
+      fontSize: '12px',
+      fontWeight: '600',
+      borderRadius: '20px',
+      border: 'none',
+      cursor: 'pointer',
+      transition: 'all 0.3s ease'
+    },
+
+    dashboardCard: {
+      background: 'rgba(255, 255, 255, 0.95)',
+      backdropFilter: 'blur(20px)',
+      borderRadius: '24px',
+      boxShadow: '0 25px 50px rgba(0, 0, 0, 0.1)',
+      border: '1px solid rgba(255, 255, 255, 0.5)',
+      overflow: 'hidden'
+    },
+
+    tabNavigation: {
+      borderBottom: '2px solid #f3f4f6',
+      background: 'rgba(249, 250, 251, 0.8)'
+    },
+
+    tabNav: {
+      display: 'flex',
+      padding: '0 24px',
+      gap: '8px',
+      overflowX: 'auto'
+    },
+
+    tabButton: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      padding: '16px 20px',
+      fontSize: '14px',
+      fontWeight: '600',
+      border: 'none',
+      background: 'transparent',
+      cursor: 'pointer',
+      transition: 'all 0.3s ease',
+      borderRadius: '12px 12px 0 0',
+      minWidth: 'fit-content',
+      whiteSpace: 'nowrap'
+    },
+
+    activeTab: {
+      color: '#3b82f6',
+      background: 'rgba(59, 130, 246, 0.1)',
+      borderBottom: '3px solid #3b82f6'
+    },
+
+    inactiveTab: {
+      color: '#6b7280'
+    },
+
+    tabContent: {
+      padding: '32px'
+    },
+
+    sectionTitle: {
+      fontSize: '24px',
+      fontWeight: '700',
+      color: '#1f2937',
+      marginBottom: '24px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px'
+    },
+
+    sectionIcon: {
+      width: '32px',
+      height: '32px',
+      borderRadius: '8px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+
+    overviewGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+      gap: '32px'
+    },
+
+    chartCard: {
+      background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+      borderRadius: '20px',
+      padding: '32px',
+      border: '1px solid rgba(226, 232, 240, 0.8)',
+      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.05)'
+    },
+
+    chartTitle: {
+      fontSize: '18px',
+      fontWeight: '700',
+      marginBottom: '24px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      color: '#1f2937'
+    },
+
+    symptomChecker: {
+      background: 'linear-gradient(135deg, #faf5ff 0%, #f0f9ff 100%)',
+      borderRadius: '20px',
+      padding: '32px',
+      border: '1px solid rgba(196, 181, 253, 0.3)'
+    },
+
+    symptomInput: {
+      display: 'flex',
+      gap: '16px',
+      marginBottom: '24px',
+      flexWrap: 'wrap'
+    },
+
+    symptomTextarea: {
+      flex: '1',
+      minWidth: '300px',
+      padding: '16px',
+      border: '2px solid #e5e7eb',
+      borderRadius: '12px',
+      fontSize: '16px',
+      fontFamily: 'inherit',
+      resize: 'vertical',
+      minHeight: '60px',
+      outline: 'none',
+      transition: 'border-color 0.3s ease'
+    },
+
+    analyzeButton: {
+      padding: '16px 32px',
+      background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+      color: 'white',
+      border: 'none',
+      borderRadius: '12px',
+      fontSize: '16px',
+      fontWeight: '600',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      transition: 'all 0.3s ease',
+      boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)',
+      minWidth: 'fit-content'
+    },
+
+    analysisResult: {
+      background: 'white',
+      borderRadius: '16px',
+      padding: '24px',
+      borderLeft: '4px solid #3b82f6',
+      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
+    },
+
+    analysisTitle: {
+      fontSize: '16px',
+      fontWeight: '700',
+      color: '#1f2937',
+      marginBottom: '12px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px'
+    },
+
+    analysisText: {
+      color: '#4b5563',
+      lineHeight: '1.6',
+      marginBottom: '16px'
+    },
+
+    actionButtons: {
+      display: 'flex',
+      gap: '12px',
+      flexWrap: 'wrap'
+    },
+
+    actionButton: {
+      padding: '12px 20px',
+      borderRadius: '8px',
+      border: 'none',
+      fontSize: '14px',
+      fontWeight: '600',
+      cursor: 'pointer',
+      transition: 'all 0.3s ease'
+    },
+
+    primaryAction: {
+      background: '#10b981',
+      color: 'white'
+    },
+
+    secondaryAction: {
+      background: '#6b7280',
+      color: 'white'
+    },
+
+    medicineCard: {
+      background: 'linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 100%)',
+      borderRadius: '16px',
+      padding: '24px',
+      borderLeft: '4px solid #10b981',
+      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.08)',
+      transition: 'all 0.3s ease'
+    },
+
+    medicineHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      flexWrap: 'wrap',
+      gap: '16px'
+    },
+
+    medicineInfo: {
+      flex: '1',
+      minWidth: '250px'
+    },
+
+    medicineName: {
+      fontSize: '20px',
+      fontWeight: '700',
+      color: '#1f2937',
+      marginBottom: '8px'
+    },
+
+    medicineDosage: {
+      color: '#6b7280',
+      marginBottom: '12px',
+      fontSize: '14px'
+    },
+
+    medicineDetails: {
+      display: 'flex',
+      gap: '16px',
+      flexWrap: 'wrap',
+      fontSize: '14px'
+    },
+
+    medicineStatus: {
+      padding: '6px 12px',
+      borderRadius: '20px',
+      fontSize: '12px',
+      fontWeight: '600'
+    },
+
+    statusLow: {
+      background: '#fef2f2',
+      color: '#dc2626'
+    },
+
+    statusMedium: {
+      background: '#fefce8',
+      color: '#ca8a04'
+    },
+
+    statusGood: {
+      background: '#f0fdf4',
+      color: '#16a34a'
+    },
+
+    refillInfo: {
+      color: '#6b7280',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '4px'
+    },
+
+    refillButton: {
+      padding: '12px 24px',
+      background: '#3b82f6',
+      color: 'white',
+      border: 'none',
+      borderRadius: '8px',
+      fontSize: '14px',
+      fontWeight: '600',
+      cursor: 'pointer',
+      transition: 'background-color 0.3s ease'
+    },
+
+    appointmentCard: {
+      background: 'white',
+      border: '2px solid #f3f4f6',
+      borderRadius: '16px',
+      padding: '24px',
+      transition: 'all 0.3s ease',
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+    },
+
+    appointmentHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      flexWrap: 'wrap',
+      gap: '16px'
+    },
+
+    appointmentInfo: {
+      flex: '1',
+      minWidth: '250px'
+    },
+
+    doctorName: {
+      fontSize: '20px',
+      fontWeight: '700',
+      color: '#1f2937',
+      marginBottom: '8px'
+    },
+
+    specialty: {
+      color: '#6b7280',
+      marginBottom: '12px'
+    },
+
+    appointmentDetails: {
+      display: 'flex',
+      gap: '16px',
+      fontSize: '14px',
+      color: '#6b7280',
+      flexWrap: 'wrap'
+    },
+
+    appointmentDetail: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '4px'
+    },
+
+    statusBadge: {
+      padding: '8px 16px',
+      borderRadius: '20px',
+      fontSize: '12px',
+      fontWeight: '600'
+    },
+
+    statusUpcoming: {
+      background: '#dbeafe',
+      color: '#1d4ed8'
+    },
+
+    statusCompleted: {
+      background: '#dcfce7',
+      color: '#16a34a'
+    },
+
+    profileGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+      gap: '32px'
+    },
+
+    profileSection: {
+      background: '#f9fafb',
+      borderRadius: '16px',
+      padding: '24px'
+    },
+
+    profileSectionTitle: {
+      fontSize: '18px',
+      fontWeight: '700',
+      color: '#1f2937',
+      marginBottom: '16px'
+    },
+
+    profileItem: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: '12px',
+      fontSize: '14px'
+    },
+
+    profileLabel: {
+      fontWeight: '600',
+      color: '#374151',
+      minWidth: '120px'
+    },
+
+    profileValue: {
+      color: '#1f2937',
+      textAlign: 'right',
+      wordBreak: 'break-word'
+    },
+
+    editButton: {
+      padding: '16px 32px',
+      background: '#3b82f6',
+      color: 'white',
+      border: 'none',
+      borderRadius: '12px',
+      fontSize: '16px',
+      fontWeight: '600',
+      cursor: 'pointer',
+      transition: 'background-color 0.3s ease',
+      boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)'
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div style={styles.container}>
       {/* Header */}
-      <header className="bg-white shadow-lg border-b-4 border-green-500">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl flex items-center justify-center">
-                <Heart className="text-white w-8 h-8" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                  SwasthyaSetu
-                </h1>
-                <p className="text-gray-600">Patient Dashboard</p>
-              </div>
+      <header style={styles.header}>
+        <div style={styles.headerContent}>
+          <div style={styles.logo}>
+            <div 
+              style={styles.logoIcon}
+              onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
+              onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+            >
+              <img 
+                  src="/logo.png"      // Path to your logo image
+                  alt="SwasthyaSetu Logo"
+                  style={{ width: '56px', height: '56px', borderRadius: '16px', objectFit: 'cover' }}
+              />
             </div>
-            <div className="flex items-center space-x-6">
-              <div className="hidden md:block text-right">
-                <p className="font-semibold text-gray-800">Welcome, {patientInfo.name}</p>
-                <p className="text-sm text-gray-600">{patientInfo.email}</p>
-              </div>
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center">
-                <User className="text-white w-5 h-5" />
-              </div>
-              <Bell className="text-gray-600 hover:text-blue-500 cursor-pointer w-6 h-6" />
+            <div>
+              <div style={styles.logoText}>SwasthyaSetu</div>
+              <div style={styles.logoSubtitle}>Patient Dashboard</div>
             </div>
+          </div>
+          
+          <div style={styles.headerRight}>
+            <div style={styles.userInfo}>
+              <div style={styles.userName}>Welcome, {patientInfo.name}</div>
+              <div style={styles.userEmail}>{patientInfo.email}</div>
+            </div>
+            <div style={styles.userAvatar}>
+              <User size={20} color="white" />
+            </div>
+            <Bell 
+              size={24} 
+              style={styles.bellIcon}
+              onMouseEnter={(e) => {
+                e.target.style.color = '#3b82f6';
+                e.target.style.background = 'rgba(59, 130, 246, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.color = '#6b7280';
+                e.target.style.background = 'transparent';
+              }}
+            />
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div style={styles.mainContent}>
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-2xl p-6 shadow-xl border-l-4 border-indigo-500 hover:shadow-2xl transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center space-x-2 mb-2">
-                  <Calendar className="text-indigo-500 w-5 h-5" />
-                  <h3 className="text-sm font-medium text-gray-600">Next Appointment</h3>
+        <div style={styles.quickStats}>
+          <div 
+            style={{...styles.statCard, borderLeft: '4px solid #6366f1'}}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.08)';
+            }}
+          >
+            <div style={styles.statCardInner}>
+              <div style={styles.statInfo}>
+                <div style={styles.statHeader}>
+                  <Calendar size={20} color="#6366f1" />
+                  <span style={styles.statTitle}>Next Appointment</span>
                 </div>
-                <p className="text-xl font-bold text-gray-800">Today, 5:00 PM</p>
+                <div style={styles.statValue}>Today, 5:00 PM</div>
               </div>
-              <button className="px-3 py-1 text-xs font-medium bg-indigo-100 text-indigo-700 rounded-full hover:bg-indigo-500 hover:text-white transition-colors">
+              <button 
+                style={{...styles.statButton, background: '#e0e7ff', color: '#6366f1'}}
+                onMouseEnter={(e) => {
+                  e.target.style.background = '#6366f1';
+                  e.target.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = '#e0e7ff';
+                  e.target.style.color = '#6366f1';
+                }}
+              >
                 View
               </button>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-xl border-l-4 border-green-500 hover:shadow-2xl transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center space-x-2 mb-2">
-                  <Pill className="text-green-500 w-5 h-5" />
-                  <h3 className="text-sm font-medium text-gray-600">Active Prescriptions</h3>
+          <div 
+            style={{...styles.statCard, borderLeft: '4px solid #10b981'}}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.08)';
+            }}
+          >
+            <div style={styles.statCardInner}>
+              <div style={styles.statInfo}>
+                <div style={styles.statHeader}>
+                  <Pill size={20} color="#10b981" />
+                  <span style={styles.statTitle}>Active Prescriptions</span>
                 </div>
-                <p className="text-xl font-bold text-gray-800">3 Medicines</p>
+                <div style={styles.statValue}>3 Medicines</div>
               </div>
-              <button className="px-3 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full hover:bg-green-500 hover:text-white transition-colors">
+              <button 
+                style={{...styles.statButton, background: '#d1fae5', color: '#10b981'}}
+                onMouseEnter={(e) => {
+                  e.target.style.background = '#10b981';
+                  e.target.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = '#d1fae5';
+                  e.target.style.color = '#10b981';
+                }}
+              >
                 Refill
               </button>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-xl border-l-4 border-red-500 hover:shadow-2xl transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center space-x-2 mb-2">
-                  <FileText className="text-red-500 w-5 h-5" />
-                  <h3 className="text-sm font-medium text-gray-600">Reports Available</h3>
+          <div 
+            style={{...styles.statCard, borderLeft: '4px solid #ef4444'}}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.08)';
+            }}
+          >
+            <div style={styles.statCardInner}>
+              <div style={styles.statInfo}>
+                <div style={styles.statHeader}>
+                  <FileText size={20} color="#ef4444" />
+                  <span style={styles.statTitle}>Reports Available</span>
                 </div>
-                <p className="text-xl font-bold text-gray-800">2 New</p>
+                <div style={styles.statValue}>2 New</div>
               </div>
-              <button className="px-3 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full hover:bg-red-500 hover:text-white transition-colors">
+              <button 
+                style={{...styles.statButton, background: '#fee2e2', color: '#ef4444'}}
+                onMouseEnter={(e) => {
+                  e.target.style.background = '#ef4444';
+                  e.target.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = '#fee2e2';
+                  e.target.style.color = '#ef4444';
+                }}
+              >
                 Download
               </button>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-xl border-l-4 border-orange-500 hover:shadow-2xl transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center space-x-2 mb-2">
-                  <Phone className="text-orange-500 w-5 h-5" />
-                  <h3 className="text-sm font-medium text-gray-600">Emergency Help</h3>
+          <div 
+            style={{...styles.statCard, borderLeft: '4px solid #f59e0b'}}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.08)';
+            }}
+          >
+            <div style={styles.statCardInner}>
+              <div style={styles.statInfo}>
+                <div style={styles.statHeader}>
+                  <Phone size={20} color="#f59e0b" />
+                  <span style={styles.statTitle}>Emergency Help</span>
                 </div>
-                <p className="text-xl font-bold text-gray-800">24/7 Available</p>
+                <div style={styles.statValue}>24/7 Available</div>
               </div>
-              <button className="px-3 py-1 text-xs font-medium bg-orange-100 text-orange-700 rounded-full hover:bg-orange-500 hover:text-white transition-colors">
+              <button 
+                style={{...styles.statButton, background: '#fef3c7', color: '#f59e0b'}}
+                onMouseEnter={(e) => {
+                  e.target.style.background = '#f59e0b';
+                  e.target.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = '#fef3c7';
+                  e.target.style.color = '#f59e0b';
+                }}
+              >
                 Call Now
               </button>
             </div>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+        {/* Main Dashboard Card */}
+        <div style={styles.dashboardCard}>
           {/* Tab Navigation */}
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6" aria-label="Tabs">
+          <div style={styles.tabNavigation}>
+            <nav style={styles.tabNav}>
               {[
                 { id: 'overview', name: 'Overview', icon: Activity },
                 { id: 'symptoms', name: 'AI Symptom Checker', icon: Heart },
@@ -191,13 +837,12 @@ const PatientDashboard = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600 bg-blue-50'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm flex items-center space-x-2 rounded-t-lg transition-all duration-200`}
+                  style={{
+                    ...styles.tabButton,
+                    ...(activeTab === tab.id ? styles.activeTab : styles.inactiveTab)
+                  }}
                 >
-                  <tab.icon className="w-4 h-4" />
+                  <tab.icon size={16} />
                   <span>{tab.name}</span>
                 </button>
               ))}
@@ -205,30 +850,30 @@ const PatientDashboard = () => {
           </div>
 
           {/* Tab Content */}
-          <div className="p-6">
+          <div style={styles.tabContent}>
             {activeTab === 'overview' && (
-              <div className="space-y-8">
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6">
-                    <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-                      <Activity className="text-blue-500 w-5 h-5" />
-                      <span>Health Metrics Trend</span>
+              <div>
+                <div style={styles.overviewGrid}>
+                  <div style={styles.chartCard}>
+                    <h3 style={styles.chartTitle}>
+                      <Activity size={20} color="#3b82f6" />
+                      Health Metrics Trend
                     </h3>
                     <ResponsiveContainer width="100%" height={200}>
                       <LineChart data={healthMetrics}>
                         <XAxis dataKey="date" />
                         <YAxis />
                         <Tooltip />
-                        <Line type="monotone" dataKey="bp" stroke="#4F46E5" strokeWidth={2} name="Blood Pressure" />
-                        <Line type="monotone" dataKey="sugar" stroke="#059669" strokeWidth={2} name="Blood Sugar" />
+                        <Line type="monotone" dataKey="bp" stroke="#4F46E5" strokeWidth={3} name="Blood Pressure" />
+                        <Line type="monotone" dataKey="sugar" stroke="#059669" strokeWidth={3} name="Blood Sugar" />
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
 
-                  <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6">
-                    <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-                      <Heart className="text-red-500 w-5 h-5" />
-                      <span>Common Symptoms</span>
+                  <div style={styles.chartCard}>
+                    <h3 style={styles.chartTitle}>
+                      <Heart size={20} color="#ef4444" />
+                      Common Symptoms
                     </h3>
                     <ResponsiveContainer width="100%" height={200}>
                       <PieChart>
@@ -249,40 +894,64 @@ const PatientDashboard = () => {
             )}
 
             {activeTab === 'symptoms' && (
-              <div className="space-y-6">
-                <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-8">
-                  <h3 className="text-2xl font-semibold mb-6 flex items-center space-x-2">
-                    <Heart className="text-purple-500 w-6 h-6" />
-                    <span>AI Symptom Checker</span>
+              <div>
+                <div style={styles.symptomChecker}>
+                  <h3 style={styles.sectionTitle}>
+                    <div style={{...styles.sectionIcon, background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)'}}>
+                      <Heart size={18} color="white" />
+                    </div>
+                    AI-Powered Symptom Checker
                   </h3>
-                  <div className="flex flex-col md:flex-row gap-4 mb-6">
-                    <input
-                      type="text"
+                  
+                  <div style={styles.symptomInput}>
+                    <textarea
                       value={symptoms}
                       onChange={(e) => setSymptoms(e.target.value)}
-                      placeholder="Describe your symptoms (e.g., fever, headache, cough)..."
-                      className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+                      placeholder="Describe your symptoms in detail (e.g., fever since 2 days, headache, body pain, fatigue)..."
+                      style={{
+                        ...styles.symptomTextarea,
+                        borderColor: symptoms ? '#3b82f6' : '#e5e7eb'
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                      onBlur={(e) => e.target.style.borderColor = symptoms ? '#3b82f6' : '#e5e7eb'}
                     />
                     <button
                       onClick={handleSymptomCheck}
-                      className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
+                      style={styles.analyzeButton}
+                      onMouseEnter={(e) => {
+                        e.target.style.transform = 'translateY(-2px)';
+                        e.target.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.4)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.transform = 'translateY(0)';
+                        e.target.style.boxShadow = '0 4px 15px rgba(59, 130, 246, 0.3)';
+                      }}
                     >
-                      <Search className="w-4 h-4 inline mr-2" />
-                      Analyze
+                      <Search size={16} />
+                      Analyze Symptoms
                     </button>
                   </div>
+                  
                   {aiAnalysis && (
-                    <div className="bg-white border-l-4 border-blue-500 p-6 rounded-r-lg shadow-lg">
-                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center space-x-2">
-                        <Activity className="w-5 h-5 text-blue-500" />
-                        <span>AI Analysis:</span>
+                    <div style={styles.analysisResult}>
+                      <h4 style={styles.analysisTitle}>
+                        <Activity size={20} color="#3b82f6" />
+                        AI Health Analysis
                       </h4>
-                      <p className="text-gray-700 mb-4">{aiAnalysis}</p>
-                      <div className="flex flex-wrap gap-3">
-                        <button className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors shadow-md">
-                          Book Consultation
+                      <p style={styles.analysisText}>{aiAnalysis}</p>
+                      <div style={styles.actionButtons}>
+                        <button 
+                          style={{...styles.actionButton, ...styles.primaryAction}}
+                          onMouseEnter={(e) => e.target.style.background = '#059669'}
+                          onMouseLeave={(e) => e.target.style.background = '#10b981'}
+                        >
+                          Book Video Consultation
                         </button>
-                        <button className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors shadow-md">
+                        <button 
+                          style={{...styles.actionButton, ...styles.secondaryAction}}
+                          onMouseEnter={(e) => e.target.style.background = '#4b5563'}
+                          onMouseLeave={(e) => e.target.style.background = '#6b7280'}
+                        >
                           Get Second Opinion
                         </button>
                       </div>
@@ -293,126 +962,280 @@ const PatientDashboard = () => {
             )}
 
             {activeTab === 'prescriptions' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-semibold flex items-center space-x-2">
-                    <Pill className="text-green-500 w-6 h-6" />
-                    <span>Active Prescriptions</span>
+              <div>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '16px'}}>
+                  <h3 style={styles.sectionTitle}>
+                    <div style={{...styles.sectionIcon, background: 'linear-gradient(135deg, #10b981, #059669)'}}>
+                      <Pill size={18} color="white" />
+                    </div>
+                    Active Prescriptions
                   </h3>
-                  <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center space-x-2">
-                    <Plus className="w-4 h-4" />
-                    <span>Add Medicine</span>
+                  <button 
+                    style={{
+                      padding: '12px 24px',
+                      background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '12px',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      transition: 'all 0.3s ease',
+                      boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.transform = 'translateY(-2px)';
+                      e.target.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.transform = 'translateY(0)';
+                      e.target.style.boxShadow = '0 4px 15px rgba(59, 130, 246, 0.3)';
+                    }}
+                  >
+                    <Plus size={16} />
+                    Add Medicine
                   </button>
                 </div>
-                {medicines.map((medicine, index) => (
-                  <div key={index} className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 border-l-4 border-green-500 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <div className="flex flex-col md:flex-row md:items-start md:justify-between">
-                      <div className="flex-1 mb-4 md:mb-0">
-                        <h4 className="font-semibold text-xl text-gray-800 mb-1">{medicine.name}</h4>
-                        <p className="text-gray-600 mb-3">{medicine.dosage}</p>
-                        <div className="flex flex-wrap items-center gap-4 text-sm">
-                          <span className={`px-3 py-1 rounded-full font-medium ${
-                            medicine.status === 'low' ? 'bg-red-100 text-red-700' : 
-                            medicine.status === 'medium' ? 'bg-yellow-100 text-yellow-700' : 
-                            'bg-green-100 text-green-700'
-                          }`}>
-                            {medicine.remaining} tablets left
-                          </span>
-                          <span className="text-gray-500 flex items-center space-x-1">
-                            <Calendar className="w-4 h-4" />
-                            <span>Refill by: {medicine.refillDate}</span>
-                          </span>
+                
+                <div style={{display: 'flex', flexDirection: 'column', gap: '24px'}}>
+                  {medicines.map((medicine, index) => (
+                    <div 
+                      key={index} 
+                      style={styles.medicineCard}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.12)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.08)';
+                      }}
+                    >
+                      <div style={styles.medicineHeader}>
+                        <div style={styles.medicineInfo}>
+                          <h4 style={styles.medicineName}>{medicine.name}</h4>
+                          <p style={styles.medicineDosage}>{medicine.dosage}</p>
+                          <div style={styles.medicineDetails}>
+                            <span style={{
+                              ...styles.medicineStatus,
+                              ...(medicine.status === 'low' ? styles.statusLow : 
+                                  medicine.status === 'medium' ? styles.statusMedium : 
+                                  styles.statusGood)
+                            }}>
+                              {medicine.remaining} tablets left
+                            </span>
+                            <span style={styles.refillInfo}>
+                              <Calendar size={16} />
+                              Refill by: {medicine.refillDate}
+                            </span>
+                          </div>
                         </div>
+                        <button 
+                          style={styles.refillButton}
+                          onMouseEnter={(e) => e.target.style.background = '#1d4ed8'}
+                          onMouseLeave={(e) => e.target.style.background = '#3b82f6'}
+                        >
+                          Order Refill
+                        </button>
                       </div>
-                      <button className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-md">
-                        Order Refill
-                      </button>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
 
             {activeTab === 'appointments' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-semibold flex items-center space-x-2">
-                    <Calendar className="text-blue-500 w-6 h-6" />
-                    <span>Appointments</span>
+              <div>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '16px'}}>
+                  <h3 style={styles.sectionTitle}>
+                    <div style={{...styles.sectionIcon, background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)'}}>
+                      <Calendar size={18} color="white" />
+                    </div>
+                    My Appointments
                   </h3>
-                  <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-lg hover:from-blue-600 hover:to-green-600 transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
+                  <button 
+                    style={{
+                      padding: '16px 32px',
+                      background: 'linear-gradient(135deg, #10b981, #059669)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '12px',
+                      fontSize: '16px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.transform = 'translateY(-2px)';
+                      e.target.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.transform = 'translateY(0)';
+                      e.target.style.boxShadow = '0 4px 15px rgba(16, 185, 129, 0.3)';
+                    }}
+                  >
                     Book New Consultation
                   </button>
                 </div>
-                {appointments.map((appointment) => (
-                  <div key={appointment.id} className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow shadow-md">
-                    <div className="flex flex-col md:flex-row md:items-start md:justify-between">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-xl text-gray-800 mb-1">{appointment.doctor}</h4>
-                        <p className="text-gray-600 mb-3">{appointment.specialty}</p>
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                          <span className="flex items-center space-x-1">
-                            <Calendar className="w-4 h-4" />
-                            <span>{appointment.date} at {appointment.time}</span>
-                          </span>
-                          <span className="flex items-center space-x-1">
-                            <MapPin className="w-4 h-4" />
-                            <span>{appointment.type}</span>
-                          </span>
+                
+                <div style={{display: 'flex', flexDirection: 'column', gap: '24px'}}>
+                  {appointments.map((appointment) => (
+                    <div 
+                      key={appointment.id} 
+                      style={styles.appointmentCard}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.12)';
+                        e.currentTarget.style.borderColor = '#3b82f6';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.05)';
+                        e.currentTarget.style.borderColor = '#f3f4f6';
+                      }}
+                    >
+                      <div style={styles.appointmentHeader}>
+                        <div style={styles.appointmentInfo}>
+                          <h4 style={styles.doctorName}>{appointment.doctor}</h4>
+                          <p style={styles.specialty}>{appointment.specialty}</p>
+                          <div style={styles.appointmentDetails}>
+                            <div style={styles.appointmentDetail}>
+                              <Calendar size={16} />
+                              <span>{appointment.date} at {appointment.time}</span>
+                            </div>
+                            <div style={styles.appointmentDetail}>
+                              <MapPin size={16} />
+                              <span>{appointment.type}</span>
+                            </div>
+                          </div>
                         </div>
+                        <span style={{
+                          ...styles.statusBadge,
+                          ...(appointment.status === 'Upcoming' ? styles.statusUpcoming : styles.statusCompleted)
+                        }}>
+                          {appointment.status}
+                        </span>
                       </div>
-                      <span className={`px-4 py-2 rounded-full text-sm font-medium ${
-                        appointment.status === 'Upcoming' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
-                      }`}>
-                        {appointment.status}
-                      </span>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
 
             {activeTab === 'profile' && (
-              <div className="space-y-8">
-                <h3 className="text-2xl font-semibold flex items-center space-x-2">
-                  <User className="text-blue-500 w-6 h-6" />
-                  <span>Patient Profile</span>
+              <div>
+                <h3 style={styles.sectionTitle}>
+                  <div style={{...styles.sectionIcon, background: 'linear-gradient(135deg, #6366f1, #4f46e5)'}}>
+                    <User size={18} color="white" />
+                  </div>
+                  Patient Profile
                 </h3>
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div className="space-y-6">
-                    <div className="bg-gray-50 p-6 rounded-xl">
-                      <h4 className="font-semibold text-gray-700 mb-4 text-lg">Personal Information</h4>
-                      <div className="space-y-3">
-                        <div className="flex justify-between"><strong>Name:</strong> <span>{patientInfo.name || 'Not provided'}</span></div>
-                        <div className="flex justify-between"><strong>Email:</strong> <span>{patientInfo.email || 'Not provided'}</span></div>
-                        <div className="flex justify-between"><strong>Date of Birth:</strong> <span>{patientInfo.dob || 'Not provided'}</span></div>
-                        <div className="flex justify-between"><strong>Gender:</strong> <span>{patientInfo.gender || 'Not provided'}</span></div>
-                        <div className="flex justify-between"><strong>Blood Group:</strong> <span>{patientInfo.bloodGroup || 'Not provided'}</span></div>
-                        <div className="flex justify-between"><strong>Marital Status:</strong> <span>{patientInfo.maritalStatus || 'Not provided'}</span></div>
-                      </div>
+                
+                <div style={styles.profileGrid}>
+                  <div style={styles.profileSection}>
+                    <h4 style={styles.profileSectionTitle}>Personal Information</h4>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Name:</strong>
+                      <span style={styles.profileValue}>{patientInfo.name || 'Not provided'}</span>
+                    </div>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Email:</strong>
+                      <span style={styles.profileValue}>{patientInfo.email || 'Not provided'}</span>
+                    </div>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Date of Birth:</strong>
+                      <span style={styles.profileValue}>{patientInfo.dob || 'Not provided'}</span>
+                    </div>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Gender:</strong>
+                      <span style={styles.profileValue}>{patientInfo.gender || 'Not provided'}</span>
+                    </div>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Blood Group:</strong>
+                      <span style={styles.profileValue}>{patientInfo.bloodGroup || 'Not provided'}</span>
+                    </div>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Marital Status:</strong>
+                      <span style={styles.profileValue}>{patientInfo.maritalStatus || 'Not provided'}</span>
                     </div>
                   </div>
-                  <div className="space-y-6">
-                    <div className="bg-gray-50 p-6 rounded-xl">
-                      <h4 className="font-semibold text-gray-700 mb-4 text-lg">Contact & Emergency</h4>
-                      <div className="space-y-3">
-                        <div className="flex justify-between"><strong>Mobile:</strong> <span>{patientInfo.mobile || 'Not provided'}</span></div>
-                        <div className="flex justify-between"><strong>Address:</strong> <span>{patientInfo.address || 'Not provided'}</span></div>
-                        <div className="flex justify-between"><strong>Emergency Contact:</strong> <span>{patientInfo.emergencyName || 'Not provided'}</span></div>
-                        <div className="flex justify-between"><strong>Emergency Phone:</strong> <span>{patientInfo.emergencyPhone || 'Not provided'}</span></div>
-                      </div>
+
+                  <div style={styles.profileSection}>
+                    <h4 style={styles.profileSectionTitle}>Contact & Emergency</h4>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Mobile:</strong>
+                      <span style={styles.profileValue}>{patientInfo.mobile || 'Not provided'}</span>
                     </div>
-                    <div className="bg-gray-50 p-6 rounded-xl">
-                      <h4 className="font-semibold text-gray-700 mb-4 text-lg">Medical Information</h4>
-                      <div className="space-y-3">
-                        <div className="flex justify-between"><strong>Conditions:</strong> <span>{patientInfo.conditions || 'None reported'}</span></div>
-                        <div className="flex justify-between"><strong>Allergies:</strong> <span>{patientInfo.allergies || 'None reported'}</span></div>
-                        <div className="flex justify-between"><strong>Medications:</strong> <span>{patientInfo.medications || 'None reported'}</span></div>
-                      </div>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Address:</strong>
+                      <span style={styles.profileValue}>{patientInfo.address || 'Not provided'}</span>
+                    </div>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Emergency Contact:</strong>
+                      <span style={styles.profileValue}>{patientInfo.emergencyName || 'Not provided'}</span>
+                    </div>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Emergency Phone:</strong>
+                      <span style={styles.profileValue}>{patientInfo.emergencyPhone || 'Not provided'}</span>
+                    </div>
+                  </div>
+
+                  <div style={styles.profileSection}>
+                    <h4 style={styles.profileSectionTitle}>Medical Information</h4>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Conditions:</strong>
+                      <span style={styles.profileValue}>{patientInfo.conditions || 'None reported'}</span>
+                    </div>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Allergies:</strong>
+                      <span style={styles.profileValue}>{patientInfo.allergies || 'None reported'}</span>
+                    </div>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Current Medications:</strong>
+                      <span style={styles.profileValue}>{patientInfo.medications || 'None reported'}</span>
+                    </div>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Past Surgeries:</strong>
+                      <span style={styles.profileValue}>{patientInfo.surgeries || 'None'}</span>
+                    </div>
+                  </div>
+
+                  <div style={styles.profileSection}>
+                    <h4 style={styles.profileSectionTitle}>Insurance & Documents</h4>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Family Doctor:</strong>
+                      <span style={styles.profileValue}>{patientInfo.familyDoctor || 'Not assigned'}</span>
+                    </div>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Government ID:</strong>
+                      <span style={styles.profileValue}>{patientInfo.govId || 'Not provided'}</span>
+                    </div>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Insurance Provider:</strong>
+                      <span style={styles.profileValue}>{patientInfo.insuranceProvider || 'Not provided'}</span>
+                    </div>
+                    <div style={styles.profileItem}>
+                      <strong style={styles.profileLabel}>Insurance Number:</strong>
+                      <span style={styles.profileValue}>{patientInfo.insuranceNumber || 'Not provided'}</span>
                     </div>
                   </div>
                 </div>
-                <button className="px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-lg hover:shadow-xl">
+                
+                <button 
+                  style={styles.editButton}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = '#1d4ed8';
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = '#3b82f6';
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = '0 4px 15px rgba(59, 130, 246, 0.3)';
+                  }}
+                >
                   Edit Profile
                 </button>
               </div>
@@ -420,6 +1243,186 @@ const PatientDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* CSS Animations and Responsive Design */}
+      <style jsx>{`
+        /* Animations */
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.05);
+          }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+          .overviewGrid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .headerContent {
+            flex-direction: column !important;
+            gap: 16px !important;
+            text-align: center !important;
+          }
+          
+          .headerRight {
+            flex-direction: column !important;
+            gap: 12px !important;
+          }
+          
+          .quickStats {
+            grid-template-columns: 1fr !important;
+          }
+          
+          .tabNav {
+            flex-wrap: wrap !important;
+            gap: 4px !important;
+          }
+          
+          .tabButton {
+            font-size: 12px !important;
+            padding: 12px 16px !important;
+          }
+          
+          .profileGrid {
+            grid-template-columns: 1fr !important;
+          }
+          
+          .symptomInput {
+            flex-direction: column !important;
+          }
+          
+          .symptomTextarea {
+            min-width: 100% !important;
+          }
+          
+          .medicineHeader,
+          .appointmentHeader {
+            flex-direction: column !important;
+            gap: 16px !important;
+          }
+          
+          .actionButtons {
+            flex-direction: column !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .mainContent {
+            padding: 16px 12px !important;
+          }
+          
+          .tabContent {
+            padding: 16px !important;
+          }
+          
+          .logoText {
+            font-size: 24px !important;
+          }
+          
+          .statCard {
+            padding: 16px !important;
+          }
+          
+          .chartCard,
+          .symptomChecker,
+          .profileSection {
+            padding: 16px !important;
+          }
+        }
+
+        /* Smooth scrolling */
+        html {
+          scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: linear-gradient(135deg, #10b981, #3b82f6);
+          border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(135deg, #059669, #1d4ed8);
+        }
+
+        /* Focus states for accessibility */
+        button:focus,
+        input:focus,
+        textarea:focus,
+        select:focus {
+          outline: 2px solid #3b82f6;
+          outline-offset: 2px;
+        }
+
+        /* Loading states */
+        .loading {
+          animation: pulse 2s infinite;
+        }
+
+        /* Hover effects for interactive elements */
+        .interactive {
+          transition: all 0.3s ease;
+        }
+
+        .interactive:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Chart styling */
+        .recharts-cartesian-axis-line,
+        .recharts-cartesian-axis-tick-line {
+          stroke: #e2e8f0;
+        }
+
+        .recharts-cartesian-axis-tick-value {
+          fill: #64748b;
+          font-size: 12px;
+        }
+
+        .recharts-tooltip-wrapper {
+          border-radius: 8px !important;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+        }
+      `}</style>
     </div>
   );
 };

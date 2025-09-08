@@ -13,7 +13,7 @@ function LoginDoctor() {
   const handleLogin = async () => {
     try {
       // simulate login
-      await loginUser("doctor", { email, password, securityAnswer });
+      await loginUser("doctor", { username: email, password, securityAnswer });
       navigate("/doctor-dashboard");
     } catch (err) {
       if (!requireSecurity) {

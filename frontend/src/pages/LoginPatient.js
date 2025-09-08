@@ -14,7 +14,7 @@ function LoginPatient() {
   const handleLogin = async () => {
     setError("");
     try {
-      await loginUser("patient", { email, password, securityAnswer });
+      await loginUser("patient", { username: email, password, securityAnswer });
       navigate("/patient-dashboard");
     } catch (err) {
       if (!requireSecurity) {

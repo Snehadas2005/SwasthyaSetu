@@ -15,7 +15,7 @@ function LoginAuthority() {
   const handleLogin = async () => {
     try {
       // basic login request
-      await loginUser("authority", { email, password, role, otp });
+      await loginUser("authority", { username: email, password, role, otp });
 
       navigate("/authority-dashboard");
     } catch (err) {
